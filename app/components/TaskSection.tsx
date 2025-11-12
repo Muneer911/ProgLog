@@ -16,32 +16,35 @@ interface TaskSectionProps {
   logs: ProgressLog[];
 }
 
+type NewLogData = Omit<ProgressLog, 'id' | 'timestamp' | 'progressPercentage' | 'subtasks'>;
+
+const initialFormData: NewLogData = {
+  taskName: '',
+  description: '',
+  status: 'in-progress',
+};
+
 export default function TaskSection({ onAddLog, logs }: TaskSectionProps) {
   const [isAdding, setIsAdding] = useState(false);
-  const [taskName, setTaskName] = useState('');
-  const [description, setDescription] = useState('');
-  const [status, setStatus] = useState<'completed' | 'in-progress' | 'pending'>('in-progress');
+  const [formData, setFormData] = useState<NewLogData>(initialFormData);
+  const { taskName, description, status } = formData;
 
   // Calculate real counts from logs
-  const activeTasks = logs?.filter(log => log.status === 'in-progress').length || 0;
-  const completedTasks = logs?.filter(log => log.status === 'completed').length || 0;
-  const pendingTasks = logs?.filter(log => log.status === 'pending').length || 0;
+  const activeTasks = logs.filter(log => log.status === 'in-progress').length || 0;
+  const completedTasks = logs.filter(log => log.status === 'completed').length || 0;
+  const pendingTasks = logs.filter(log => log.status === 'pending').length || 0;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (taskName && description) {
       onAddLog({
-        taskName,
-        description,
+        ...formData,
         timestamp: new Date(),
-        status,
         progressPercentage: 0,
         subtasks: []
       });
-      setTaskName('');
-      setDescription('');
-      setStatus('in-progress');
       setIsAdding(false);
+      setFormData(initialFormData);
       toast.success('Progress log added successfully!');
     }
   };
@@ -78,7 +81,7 @@ export default function TaskSection({ onAddLog, logs }: TaskSectionProps) {
                   id="task-name"
                   placeholder="e.g., Complete landing page design"
                   value={taskName}
-                  onChange={(e) => setTaskName(e.target.value)}
+                  onChange={(e) => setFormData({ ...formData, taskName: e.target.value })}
                   required
                   aria-required="true"
                 />
@@ -89,7 +92,7 @@ export default function TaskSection({ onAddLog, logs }: TaskSectionProps) {
                   id="description"
                   placeholder="Describe what you've accomplished or what you're working on..."
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   required
                   aria-required="true"
                   rows={4}
@@ -98,7 +101,12 @@ export default function TaskSection({ onAddLog, logs }: TaskSectionProps) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
-                <Select value={status} onValueChange={(value: any) => setStatus(value)}>
+                <Select 
+                  value={status} 
+                  onValueChange={(value: NewLogData['status']) => 
+                    setFormData({ ...formData, status: value })
+                  }
+                >
                   <SelectTrigger id="status" aria-label="Select task status">
                     <SelectValue />
                   </SelectTrigger>
@@ -128,7 +136,7 @@ export default function TaskSection({ onAddLog, logs }: TaskSectionProps) {
       <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base sm:text-lg">Active Tasks</CardTitle>
+            <CardTitle className="text-sm sm:text-base">Active Tasks</CardTitle>
             <Target className="size-4 text-muted-foreground group-hover:text-blue-600 transition-colors" aria-hidden="true" />
           </CardHeader>
           <CardContent>
@@ -143,7 +151,7 @@ export default function TaskSection({ onAddLog, logs }: TaskSectionProps) {
 
         <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base sm:text-lg">Completed</CardTitle>
+            <CardTitle className="text-sm sm:text-base">Completed</CardTitle>
             <TrendingUp className="size-4 text-muted-foreground group-hover:text-green-600 transition-colors" aria-hidden="true" />
           </CardHeader>
           <CardContent>
@@ -158,7 +166,7 @@ export default function TaskSection({ onAddLog, logs }: TaskSectionProps) {
 
         <Card className="hover:shadow-lg transition-shadow cursor-pointer group">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-base sm:text-lg">Pending</CardTitle>
+            <CardTitle className="text-sm sm:text-base">Pending</CardTitle>
             <Clock className="size-4 text-muted-foreground group-hover:text-orange-600 transition-colors" aria-hidden="true" />
           </CardHeader>
           <CardContent>
