@@ -140,7 +140,6 @@ export default function Dashboard({ userEmail, onSignOut }: DashboardProps) {
               </p>
             </section>
 
-            <TaskSection onAddLog={handleAddLog} />
             <TaskSection onAddLog={handleAddLog} logs={logs} />
             <LogsHistory 
               logs={logs} 
