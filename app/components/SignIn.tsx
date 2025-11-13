@@ -6,6 +6,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { LogIn, ClipboardList } from 'lucide-react';
+import DevelopmentHeader from './DevelopmentHeader';
 
 interface SignInProps {
   onSignIn: (email: string) => void;
@@ -33,6 +34,7 @@ export default function SignIn({ onSignIn, onSwitchToSignUp }: SignInProps) {
           </div>
         </div>
       </header>
+      <DevelopmentHeader/>
       <div className="flex items-center justify-center min-h-[calc(100vh-73px)] p-4">
         <Card className="w-full max-w-md hover:shadow-lg transition-shadow">
           <CardHeader className="space-y-1">
@@ -76,7 +78,7 @@ export default function SignIn({ onSignIn, onSwitchToSignUp }: SignInProps) {
                 Sign In
               </Button>
               <p className="text-center text-muted-foreground">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <button
                   type="button"
                   onClick={onSwitchToSignUp}
